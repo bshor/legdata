@@ -1,0 +1,14 @@
+Package: legdata
+Type: Package
+Title: Variety of Functions for Working with Shor Legislative Data
+Version: 0.5
+Author: Boris Shor
+Maintainer: Boris Shor <boris@bshor.com>
+Description: Variety of functions for working with Shor legislative data. Includes descriptive and modeling functions.
+License: GPL 2
+Encoding: UTF-8
+LazyData: true
+Depends: arrow, doParallel, dplyr, forcats, ggplot2, gt, fst, fs, haven, janitor, lme4, lmerTest, lubridate, modelsummary, scales, sjPlot, stringr, tibble, tictoc, tidyr, usmap
+Suggests: ggslopegraph, pryr
+URL: https://github.com/bshor/legdata
+BugReports: https://github.com/bshor/legdata/issues
