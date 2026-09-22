@@ -562,7 +562,7 @@ model_all <- function (estimator = "lpm", minimal = T, drop.unan = T, sequential
            republican=ifelse(party=="R",1,0)) # %>%
   # slice_sample(n=100000)
   toc(log = T)
-  gdata::humanReadable(pryr::object_size(model.data))
+  gdata::humanReadable(lobstr::obj_size(model.data))
   
   # health 3.45m->3.78m
   # climate 266k

@@ -35,7 +35,7 @@ process_votes <- function (revision=2024, fn="health", method="search") {
     left_join(leg.m.sub %>% select(-st), by=c("year","people.id")) %>%
     filter(year>2007)
   
-  # pryr::object_size(vote.m) # 4.9Gb 7.2GB (search) 6.2GB (topic)
+  # lobstr::obj_size(vote.m) # 4.9Gb 7.2GB (search) 6.2GB (topic)
   
   with(vote.m,cor.test(v,pred.np)) # -.33
   with(vote.m,cor.test(vote,pred.np)) # .09
@@ -141,7 +141,7 @@ process_data <- function (fn="health", ncsl=F, revision = 2024, method="search")
   tabyl(bill.m$bowen2.t)
   
   print("Size of bills")
-  print(gdata::humanReadable(pryr::object_size(bill.m))) # 13MiB
+  print(gdata::humanReadable(lobstr::obj_size(bill.m))) # 13MiB
   
   
   rc.m<-rc.search %>%
@@ -150,7 +150,7 @@ process_data <- function (fn="health", ncsl=F, revision = 2024, method="search")
     tibble
   
   print("Size of rcs")
-  print(gdata::humanReadable(pryr::object_size(rc.m))) # 9.2MiB
+  print(gdata::humanReadable(lobstr::obj_size(rc.m))) # 9.2MiB
   
   
   ####

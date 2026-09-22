@@ -98,5 +98,5 @@ signif.pct <- function() {
 fold <- function(f, x, L) (for(e in L) x <- f(x, e))
 
 objsize <- function (object) {
-  return(gdata::humanReadable(pryr::object_size(object),standard="Unix"))
+  return(gdata::humanReadable(lobstr::obj_size(object),standard="Unix"))
 }

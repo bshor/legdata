@@ -9,6 +9,7 @@ License: GPL 2
 Encoding: UTF-8
 LazyData: true
 Depends: arrow, doParallel, dplyr, forcats, ggplot2, gt, fst, fs, haven, janitor, lme4, lmerTest, lubridate, modelsummary, scales, sjPlot, stringr, tibble, tictoc, tidyr, usmap
-Suggests: ggslopegraph, pryr
+Imports: lobstr
+Suggests: ggslopegraph
 URL: https://github.com/bshor/legdata
 BugReports: https://github.com/bshor/legdata/issues
