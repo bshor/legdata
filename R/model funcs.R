@@ -1,6 +1,9 @@
 # set of model functions for 2011- data
 
+.model_core <- c("dplyr", "stringr", "tictoc")
+
 bill_models <- function(fn="health") {
+  .legdata_attach(c(.model_core, "arrow", "lme4"))
   
   # fn = "climate"
   
@@ -10,9 +13,6 @@ bill_models <- function(fn="health") {
   bill.m <- read_feather(str_c("Objects/search ",fn," bills processed.fthr"))
   #rc.m <- read_fst("Objects/search health rcs processed.fst")
   rc.m <- read_feather(str_c("Objects/search ",fn," rcs processed.fthr"))
-  
-  library(lme4)
-  library(modelsummary)
   
   fits.all = list()
   fits.all[["Democratic Majority"]] <- lmer(bill.passed ~ (1 | st) + (1 | year) + maj.median + sponsor.party + sponsor.median + polar + sponsor.count + sponsor.range + gparty, data = subset(bill.m,legparty=="D" & !is.na(sponsor.q)))
@@ -67,7 +67,7 @@ bill_models <- function(fn="health") {
 }
 
 billmodel_output <- function (fit, title) {
-  
+  .legdata_attach("modelsummary")
   modelsummary(fit,fmt=3,stars=T,
                #estimate = "{estimate}{stars}",
                statistic=NULL,
@@ -89,7 +89,7 @@ billmodel_predict <- function (fit, party,
                                xrange=c(-1.5,1.5),
                                plottype = "xcontinuous") {
   
-  library(stringr)
+  .legdata_attach(c("ggplot2", "sjPlot", "stringr"))
   
   # fit = fits.all
   #party="Democratic"; predictor="sponsor.median"; xaxis = "Sponsor Ideology"; xrange=c(-1.5,1.5)
@@ -119,9 +119,7 @@ billmodel_predict <- function (fit, party,
 }
 
 votemodel_predict <- function () {
-
-    library(sjPlot)
-    library(ggplot2)
+    .legdata_attach(c("cowplot", "ggplot2", "sjPlot", "stringr", "tictoc"))
 
     # 33s R37
     tic("Load model fits") 
@@ -154,14 +152,9 @@ votemodel_predict <- function () {
 
 
 model_ncsl <- function (estimator = "lpm", minimal = T, topics.model = F, save.model = T, para="FORK") {
-  
-  library(doParallel)
-  library(lmerTest)
-  library(fs)
-  library(fst)
-  library(dplyr)
-  library(stringr)
-  library(tictoc)
+  .legdata_attach(c(.model_core, "cowplot", "doParallel", "fs", "fst",
+                    "ggplot2", "lmerTest", "modelsummary", "sjPlot",
+                    "stargazer", "tibble"))
   
   tic.clearlog()  
   tic("Model NCSL")
@@ -366,8 +359,6 @@ model_ncsl <- function (estimator = "lpm", minimal = T, topics.model = F, save.m
     
   }
   
-  library(sjPlot)          
-  
   qu(model.data$pred.np[model.data$party=="D"],c(0.025,0.975)) # -2.04, .04
   qu(model.data$pred.np[model.data$party=="R"],c(0.025,0.975)) # 0, 1.75
   
@@ -454,6 +445,7 @@ model_ncsl <- function (estimator = "lpm", minimal = T, topics.model = F, save.m
 }
 
 model_intros <- function (revision = 2021) {
+  .legdata_attach(c(.model_core, "fst", "stargazer", "tibble"))
   #revision = 2021
   load(str_c("../Votesmart/Objects/",revision,"/state year aggregates.Rdata"))
   
@@ -493,21 +485,12 @@ model_intros <- function (revision = 2021) {
 }
 
 model_all <- function (estimator = "lpm", minimal = T, drop.unan = T, sequential = T, opinion.measure = "score.pres.pred", ideology.measure = "pred.np", save.model = T, para="FORK", revision=2023) {
-  
+  .legdata_attach(c(.model_core, "arrow", "doParallel", "fs", "fst",
+                    "janitor", "lme4", "lmerTest", "scales"))
   #estimator = "lpm"; drop.unan=T; para="FORK"; revision = 2023; sequential = T; minimal = T; 
   #ideology.measure = "pred.np"; opinion.measure = "score.pres.pred"
   #ideology.measure = "abs.dist"
   #estimator = "logit"; drop.unan=T
-  
-  library(doParallel)
-  library(lmerTest)
-  library(tictoc)
-  library(stringr)
-  library(fst)
-  library(arrow)
-  library(fs)
-  library(dplyr)
-  library(janitor)
   
   tic.clearlog()
   tic("Model all")
@@ -562,7 +545,7 @@ model_all <- function (estimator = "lpm", minimal = T, drop.unan = T, sequential
            republican=ifelse(party=="R",1,0)) # %>%
   # slice_sample(n=100000)
   toc(log = T)
-  gdata::humanReadable(lobstr::obj_size(model.data))
+  format(lobstr::obj_size(model.data))
   
   # health 3.45m->3.78m
   # climate 266k
@@ -585,13 +568,11 @@ model_all <- function (estimator = "lpm", minimal = T, drop.unan = T, sequential
   #model.data=slice_sample(model.data,n=100000)
   
   print("Number of observations is...")
-  print(formattable::comma(nrow(model.data),digits=0)) # 1.57m 1.85m 1.93m 1.98m 2.01m 3.6m 3.78m
+  print(scales::comma(nrow(model.data), accuracy = 1)) # 1.57m 1.85m 1.93m 1.98m 2.01m 3.6m 3.78m
   
   # model.data$republican = ifelse(model.data$party=="R",1,0)
   # model.data$republican[model.data$party=="X"]=NA
   #model.d
-  
-  library(doParallel)
   
   cat(str_c("Cluster type is ",para,"\n"))
   
@@ -746,9 +727,7 @@ model_all <- function (estimator = "lpm", minimal = T, drop.unan = T, sequential
 }
 
 display_model <- function (estimator = "lpm", minimal = T, drop.unan = T, sequential = T, opinion.measure = "score.pres.pred", ideology.measure = "pred.np", save.model = T, para="FORK", revision=2023, rmd=T) {
-  
-  library(modelsummary)
-  library(gt)
+  .legdata_attach(c("gt", "modelsummary", "scales", "stringr", "tibble"))
   
   
   #rmd = F; estimator = "lpm"; drop.unan=T; para="FORK"; revision = 2023; sequential = T; minimal = T; ideology.measure = "pred.np"
@@ -769,8 +748,6 @@ display_model <- function (estimator = "lpm", minimal = T, drop.unan = T, sequen
 
   
   if(minimal) { names(fit.all) = c("Democratic","Bipartisan","Republican") }
-  library(tibble)
-
   #https://stackoverflow.com/questions/1581232/add-commas-into-number-for-output
   rows <- tribble(~term, ~Democratic, ~Bipartisan,  ~Republican, 
                   'Observations', 

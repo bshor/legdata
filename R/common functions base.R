@@ -1,7 +1,24 @@
 # file stuff
 
 fi <- function (filen) {
-  print(fs::file_info(filen) %>% select(path,modification_time, size))
+  info <- file.info(filen)[, c("mtime", "size"), drop = FALSE]
+  names(info) <- c("modification_time", "size")
+  info <- data.frame(path = filen, info, row.names = NULL)
+  print(info)
+}
+
+.legdata_attach <- function(packages) {
+  missing <- packages[!vapply(packages, requireNamespace, logical(1), quietly = TRUE)]
+  if (length(missing) > 0L) {
+    stop(
+      "This function requires: ", paste(missing, collapse = ", "),
+      ". Install the missing package(s) and try again.",
+      call. = FALSE
+    )
+  }
+  suppressPackageStartupMessages(
+    invisible(lapply(packages, library, character.only = TRUE))
+  )
 }
 
 # mathy convenviencs
@@ -98,5 +115,5 @@ signif.pct <- function() {
 fold <- function(f, x, L) (for(e in L) x <- f(x, e))
 
 objsize <- function (object) {
-  return(gdata::humanReadable(lobstr::obj_size(object),standard="Unix"))
+  format(lobstr::obj_size(object))
 }

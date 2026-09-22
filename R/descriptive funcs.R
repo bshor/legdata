@@ -1,4 +1,7 @@
+.descriptive_core <- c("dplyr", "ggplot2", "scales", "stringr", "tidyr")
+
 process_votes <- function (revision=2024, fn="health", method="search") {
+  .legdata_attach(c(.descriptive_core, "arrow", "janitor", "tictoc"))
   
   # revision = 2023; fn="health"
   
@@ -78,17 +81,8 @@ process_votes <- function (revision=2024, fn="health", method="search") {
 
 
 process_data <- function (fn="health", ncsl=F, revision = 2024, method="search") {
-  
-  library(tidyr)
-  library(janitor)
-  library(dplyr)
-  library(stringr)
-  library(fst)
-  library(fs)
-  library(arrow)
-  library(tictoc)
-  #library(cspp)
-  library(haven)
+  .legdata_attach(c(.descriptive_core, "arrow", "fst", "fs", "haven",
+                    "janitor", "tictoc"))
   
   # fn="climate"; method = "topic"
   # fn="health"; method="topic"; revision = 2023
@@ -141,7 +135,7 @@ process_data <- function (fn="health", ncsl=F, revision = 2024, method="search")
   tabyl(bill.m$bowen2.t)
   
   print("Size of bills")
-  print(gdata::humanReadable(lobstr::obj_size(bill.m))) # 13MiB
+  print(format(lobstr::obj_size(bill.m))) # 13MiB
   
   
   rc.m<-rc.search %>%
@@ -150,7 +144,7 @@ process_data <- function (fn="health", ncsl=F, revision = 2024, method="search")
     tibble
   
   print("Size of rcs")
-  print(gdata::humanReadable(lobstr::obj_size(rc.m))) # 9.2MiB
+  print(format(lobstr::obj_size(rc.m))) # 9.2MiB
   
   
   ####
@@ -164,15 +158,7 @@ process_data <- function (fn="health", ncsl=F, revision = 2024, method="search")
 }
 
 gen_summaries <- function (fn="health", method="search", ncsl=F, rmd = F) {
-  
-  library(tidyr)
-  library(janitor)
-  library(dplyr)
-  library(stringr)
-  library(fst)
-  library(fs)
-  library(arrow)
-  library(tictoc)
+  .legdata_attach(c(.descriptive_core, "arrow", "fst", "fs", "janitor", "tictoc"))
   
   
   #glimpse(bill.m)
@@ -319,8 +305,7 @@ gen_summaries <- function (fn="health", method="search", ncsl=F, rmd = F) {
 
 
 descriptives_year_summary <- function (fn="climate", method = "search", revision=2024) {
-  library(janitor)
-  library(ggplot2)
+  .legdata_attach(c(.descriptive_core, "arrow", "haven", "janitor", "zoo"))
   
   #fn="health"
   
@@ -392,14 +377,7 @@ descriptives_year_summary <- function (fn="climate", method = "search", revision
 }
 
 descriptives.st.yr.outcomes <- function (region.num, method = "topic") {
-  
-  if (!requireNamespace("ggslopegraph", quietly = TRUE)) {
-    stop(
-      "descriptives.st.yr.outcomes() requires the ggslopegraph package. ",
-      "Install it with pak::pak(\"bshor/ggslopegraph\").",
-      call. = FALSE
-    )
-  }
+  .legdata_attach(c(.descriptive_core, "ggslopegraph"))
   
   styr.region <- styr.sub[[method]] %>% filter(region==region.num)
   ggslopegraph::ggslopegraph(styr.region, Times=year, Measurement=sponsor.avg, Grouping=st, Title = NULL, SubTitle= NULL, Caption=NULL) +  
@@ -409,6 +387,7 @@ descriptives.st.yr.outcomes <- function (region.num, method = "topic") {
 
 
 descriptives.sponsors.party.all <- function (fn="health") {
+  .legdata_attach(.descriptive_core)
   sponsor.summary <- bill.m %>% 
     filter(!is.na(legparty) & !is.na(sponsor.party)) %>%
     mutate(legparty=recode(legparty,"D"="D Majority","R"="R Majority","S"="Split Majority")) %>%
@@ -428,6 +407,7 @@ descriptives.sponsors.party.all <- function (fn="health") {
 }
 
 descriptives.sponsors.party.passed <- function () {
+  .legdata_attach(.descriptive_core)
   sponsor.summary <- bill.m %>% 
     filter(!is.na(legparty) & !is.na(sponsor.party)) %>%
     filter(bill.passed) %>%
@@ -449,6 +429,7 @@ descriptives.sponsors.party.passed <- function () {
 }
 
 descriptives.sponsors.ideology.all <- function () {
+  .legdata_attach(.descriptive_core)
   
   sponsor.summary <- bill.m %>% 
     filter(legparty%in%c("D","R","S") & !is.na(sponsor.t)) %>%
@@ -472,6 +453,7 @@ descriptives.sponsors.ideology.all <- function () {
 }
 
 descriptives.sponsors.ideology.passed <- function () {
+  .legdata_attach(.descriptive_core)
   
   sponsor.summary <- bill.m %>% 
     filter(legparty%in%c("D","R","S") & !is.na(sponsor.t)) %>%
@@ -496,6 +478,7 @@ descriptives.sponsors.ideology.passed <- function () {
 }
 
 descriptives.sponsors.party.hitrate <- function () {
+  .legdata_attach(.descriptive_core)
   
   sponsor.summary <- bill.m %>% 
     filter(!is.na(legparty) & !is.na(sponsor.party)) %>%
@@ -518,6 +501,7 @@ descriptives.sponsors.party.hitrate <- function () {
 }
 
 descriptives.sponsors.ideology.hitrate <- function () {
+  .legdata_attach(.descriptive_core)
   
   sponsor.summary <- bill.m %>% 
     filter(legparty%in%c("D","R","S") & !is.na(sponsor.t)) %>%
@@ -543,8 +527,7 @@ descriptives.sponsors.ideology.hitrate <- function () {
 }
 
 descriptives.ideology.trend <- function () {
-  
-  library(lubridate)
+  .legdata_attach(c(.descriptive_core, "lubridate"))
   
   sponsor.summary <- bill.m %>%
     #mutate(year=as.Date(as.character(year), format="%Y")) %>%
@@ -576,6 +559,7 @@ descriptives.ideology.trend <- function () {
 }
 
 descriptives.legparty.ideology.trend <- function () {
+  .legdata_attach(c(.descriptive_core, "lubridate"))
   # trend in sponsor ideology for passed bills
   
   sponsor.summary <- bill.m %>%
@@ -616,7 +600,7 @@ descriptives.legparty.ideology.trend <- function () {
 }
 
 descriptives.st.outcomes <- function() {
-  library(usmap)
+  .legdata_attach(c(.descriptive_core, "usmap"))
   st.summary <- bill.m %>%
     #filter(!year%in%c(2009,2021)) %>%
     group_by(st) %>%
@@ -638,9 +622,7 @@ descriptives.st.outcomes <- function() {
 
 
 descriptives.maps <- function (map.type="sponsor.median") {
-  
-  library(usmap)
-  library(scales)
+  .legdata_attach(c(.descriptive_core, "usmap"))
   
   # do state summaries
   
@@ -686,6 +668,7 @@ descriptives.maps <- function (map.type="sponsor.median") {
 }
 
 descriptives.maps.median <- function (st.summary) {
+  .legdata_attach(c(.descriptive_core, "usmap"))
   
   plot_usmap("states", data = st.summary, values="sponsor.median") +
     scale_fill_gradient2(low = muted("blue"), high = muted("red"), guide = "none")
@@ -693,6 +676,7 @@ descriptives.maps.median <- function (st.summary) {
 }
 
 descriptives.maps.liberal <- function (st.summary) {
+  .legdata_attach(c(.descriptive_core, "usmap"))
   
   plot_usmap("states", data = st.summary, values="liberal_passed") +
     scale_fill_gradient2(low = muted("white"), high = muted("blue"), guide = "none")
@@ -700,6 +684,7 @@ descriptives.maps.liberal <- function (st.summary) {
 }
 
 descriptives.maps.conservative <- function (st.summary) {
+  .legdata_attach(c(.descriptive_core, "usmap"))
   
   plot_usmap("states", data = st.summary, values="conservative_passed") +
     scale_fill_gradient2(low = muted("white"), high = muted("red"), guide = "none")
@@ -707,6 +692,7 @@ descriptives.maps.conservative <- function (st.summary) {
 }
 
 descriptives.maps.moderate <- function (st.summary) {
+  .legdata_attach(c(.descriptive_core, "usmap"))
   
   plot_usmap("states", data = st.summary, values="moderate_passed") +
     scale_fill_gradient2(low = muted("white"), high = muted("beige"), guide = "none")
@@ -715,6 +701,7 @@ descriptives.maps.moderate <- function (st.summary) {
 
 
 descriptives.bill.outcomes <- function() {
+  .legdata_attach(.descriptive_core)
   # includes failed, currently unfinished
   
   sponsor.summary <- bill.m %>%
@@ -752,6 +739,7 @@ descriptives.bill.outcomes <- function() {
 }
 
 descriptives.bill.ideology.outcomes <- function() {
+  .legdata_attach(.descriptive_core)
   
   # includes failed, currently unfinished
   
@@ -796,6 +784,7 @@ descriptives.bill.ideology.outcomes <- function() {
 
 
 descriptives.bill.ideology.passed <- function () {
+  .legdata_attach(.descriptive_core)
   sponsor.summary <- bill.m %>%
     filter(!is.na(legparty)) %>%
     filter(bill.passed) %>%
@@ -829,6 +818,7 @@ descriptives.bill.ideology.passed <- function () {
 }
 
 descriptives.bill.outcomes.trends <- function () {
+  .legdata_attach(c(.descriptive_core, "lubridate"))
   # last modified 10/16/23
   # bill outcome trends
   
@@ -864,6 +854,7 @@ descriptives.bill.outcomes.trends <- function () {
 }
 
 descriptives.bill.outcomes.majparty.trends <- function () {
+  .legdata_attach(c(.descriptive_core, "lubridate"))
   # bill outcome trends
   
   sponsor.summary <- bill.m %>%
@@ -904,6 +895,7 @@ descriptives.bill.outcomes.majparty.trends <- function () {
 
 
 descriptives <- function () {
+  .legdata_attach(.descriptive_core)
   
   descriptives.bill.outcomes()
   
@@ -925,7 +917,7 @@ descriptives <- function () {
 }
 
 stcodes <- function() {
-  library(haven)
+  .legdata_attach("haven")
   
   st.codes<-read_dta(file="../Data/States/Constant/state data.dta")
   
@@ -947,9 +939,7 @@ stcodes <- function() {
 }
 
 descriptives.legcontrol <- function (revision = 2024, path="../") {
-  
-  library(forcats)
-  library(ggplot2)
+  .legdata_attach(c(.descriptive_core, "forcats"))
   
   # revision = 2023; path = ""
   load(file=(str_c(path,"../Votesmart/Objects/",revision,"/state year aggregates.Rdata")))
@@ -977,6 +967,7 @@ descriptives.legcontrol <- function (revision = 2024, path="../") {
 }
 
 descriptives.bill.ideology.sum.passed <- function () {
+  .legdata_attach(.descriptive_core)
   
   sponsor.summary <- bill.m %>%
     filter(!is.na(sponsor.t)) %>%
@@ -1007,11 +998,9 @@ descriptives.bill.ideology.sum.passed <- function () {
 }
 
 google_output <- function (bill.m, g.sheet) {
-  
+  .legdata_attach(c(.descriptive_core, "googlesheets4"))
   # g.sheet = "13g9D9Xp8Eq4CmN5YSTTF4-RqoxtA423A9faXUzvtLk4"
 
-  library(googlesheets4)
-  
   bill.m %>%
     #filter(type=="B") %>%
     filter(bill.passed) %>%

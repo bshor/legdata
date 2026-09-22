@@ -8,8 +8,34 @@ Description: Variety of functions for working with Shor legislative data. Includ
 License: GPL 2
 Encoding: UTF-8
 LazyData: true
-Depends: arrow, doParallel, dplyr, forcats, ggplot2, gt, fst, fs, haven, janitor, lme4, lmerTest, lubridate, modelsummary, scales, sjPlot, stringr, tibble, tictoc, tidyr, usmap
+Depends: R (>= 4.1.0)
 Imports: lobstr
-Suggests: ggslopegraph
+Suggests:
+    arrow,
+    cowplot,
+    doParallel,
+    dplyr,
+    forcats,
+    fst,
+    fs,
+    ggplot2,
+    ggslopegraph,
+    googlesheets4,
+    gt,
+    haven,
+    janitor,
+    lme4,
+    lmerTest,
+    lubridate,
+    modelsummary,
+    scales,
+    sjPlot,
+    stargazer,
+    stringr,
+    tibble,
+    tictoc,
+    tidyr,
+    usmap,
+    zoo
 URL: https://github.com/bshor/legdata
 BugReports: https://github.com/bshor/legdata/issues
